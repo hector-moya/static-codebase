@@ -1,0 +1,63 @@
+monolog:
+    channels:
+        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+
+when@dev:
+    monolog:
+        handlers:
+            main:
+                type: stream
+                path: '/var/tmp/logpipe' # Follow logs with: ddev logs -f
+                level: debug
+                channels: ["!event"]
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine", "!console"]
+
+when@test:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405, 503]
+                channels: ["!event"]
+            nested:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+
+when@prod:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: critical
+                handler: grouped
+                excluded_http_codes: [404, 405, 503]
+                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+                channels: ["!deprecation", "!mailer"] # https://github.com/symfony/monolog-bundle/issues/405#issuecomment-1069040234
+            grouped:
+                type: group
+                members: [streamed, deduplicated]
+            streamed:
+                type: stream
+                path: php://stderr
+                level: debug
+            deduplicated:
+                type: deduplication
+                handler: symfony_mailer
+            symfony_mailer:
+                type: symfony_mailer
+                from_email: '%env(LOG_ERRORS_FROM)%'
+                to_email: '%env(LOG_ERRORS_TO)%'
+                subject: '%env(APP_NAME)% - [%kernel.environment%] - An Error Occurred! %%message%%'
+                level: debug
+                formatter: monolog.formatter.html
+                content_type: text/html
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine"]

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block header_content %}
+    <h1 class="mb-3">{% block title %}Viewing comment by [NAME]{% endblock title %}</h1>
+
+    <a href="{{ path('homepage') }}" class="btn btn-primary">Return to homepage</a>
+{% endblock header_content %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-12">
+            {{ include('comment/_comment.html.twig') }}
+            <hr />
+
+            <div class="ml-4">
+                <h4 class="mb-3">[NUMBER OF REPLIES HERE]</h4>
+
+                {% for i in 1..10 %}
+                    {{ include('comment/_comment.html.twig') }}
+                {% endfor %}
+
+                [PAGINATION]
+                <hr />
+
+                <h4 class="mb-3">Reply to [NAME]</h4>
+
+                [Form to go here]
+
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Add Reply</button>
+            </div>
+        </div>
+    </div>
+{% endblock body_content %}

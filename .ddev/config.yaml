@@ -1,0 +1,33 @@
+name: vivo-tech-test
+disable_settings_management: true
+type: symfony
+docroot: public
+php_version: "8.5"
+webserver_type: nginx-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+    type: mariadb
+    version: "11.8"
+use_dns_when_possible: true
+composer_version: "2"
+nodejs_version: "20"
+
+timezone: 'Australia/Brisbane'
+
+webimage_extra_packages:
+    - php8.5-ctype
+    - php8.5-iconv
+    - php8.5-mbstring
+    - php8.5-xsl
+    - php8.5-redis
+    - php8.5-imagick
+    - php-sodium
+    - jpegoptim
+    - pngquant
+
+web_environment:
+    - DDEV_APPROOT=$DDEV_APPROOT
+    - MAILER_DSN=smtp://localhost:1025
+    - DATABASE_URL=mysql://db:db@db:3306/db?serverVersion=11.8.0-MariaDB&charset=utf8mb4

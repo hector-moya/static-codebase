@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="mb-3">Recent Comments</h4>
+
+            {% for i in 1..10 %}
+                {{ include('comment/_comment.html.twig') }}
+            {% endfor %}
+
+            [PAGINATION LINKS HERE]
+
+            <hr />
+
+            <h4 class="mb-3">Add a comment</h4>
+
+            [Form to go here]
+
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Add Comment</button>
+        </div>
+    </div>
+{% endblock body_content %}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    {% endblock stylesheets %}
+
+    <title>
+        {%- if block('title') is defined and block('title')|length > 0 -%}
+            {% block title %}{% endblock title %}{{ ' | ' }}
+        {%- endif -%}
+        Vivo Group Technical Test
+    </title>
+</head>
+<body class="bg-light">
+    {% block body %}
+        <div class="container">
+            <div class="py-5 text-center">
+                <a href="{{ path('homepage') }}">
+                    <div class="mx-auto mb-4">
+                        <svg style="width: 200px; fill: #f55;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 48.56"><path d="M145.71,0h0a24.28,24.28,0,0,0-24.28,24.29h0a24.28,24.28,0,0,0,24.28,24.28h0A24.28,24.28,0,0,0,170,24.29h0A24.28,24.28,0,0,0,145.71,0Z"></path><path d="M24.29,24.29V0H0V24.29a24.29,24.29,0,0,0,48.57,0V0A24.28,24.28,0,0,0,24.29,24.29Z"></path><path d="M97.14,24.29V0H72.86A24.28,24.28,0,0,0,48.57,24.29V48.57A24.29,24.29,0,0,0,72.86,24.29a24.29,24.29,0,0,0,48.57,0V0A24.29,24.29,0,0,0,97.14,24.29Z"></path></svg>
+                    </div>
+                </a>
+                {% block header_content %}
+                    <h1>Welcome!</h1>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar elit nec enim tristique, vitae scelerisque mi rhoncus. Etiam sollicitudin arcu at tortor malesuada pellentesque. Aliquam erat volutpat. Etiam rhoncus dui eu dapibus euismod. Nunc vitae ex erat. Duis ipsum nisl, egestas id varius nec, facilisis id nibh. Cras sed lobortis dolor. Morbi at est tempor, rhoncus enim interdum, posuere lectus. Aenean gravida interdum viverra.</p>
+                {% endblock header_content %}
+
+            </div>
+
+            <div class="alert alert-success">
+                Your comment has been posted.
+            </div>
+
+            {% block body_content %}{% endblock body_content %}
+        </div>
+    {% endblock body %}
+
+    {#
+    {% block javascripts %}
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    {% endblock javascripts %}
+    #}
+</body>
+</html>
