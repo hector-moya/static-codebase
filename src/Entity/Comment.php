@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -18,16 +19,20 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[Assert\NotBlank(message: 'Name is required.')]
+    private string $name = '';
 
     #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[Assert\NotBlank(message: 'Email is required.')]
+    #[Assert\Email(message: 'Please enter a valid email address.')]
+    private string $email = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $comment = null;
+    #[Assert\NotBlank(message: 'Comment is required.')]
+    private string $comment = '';
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
     private ?self $parent = null;
@@ -39,7 +44,7 @@ class Comment
     private Collection $replies;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private \DateTimeImmutable $updatedAt;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
@@ -47,6 +52,8 @@ class Comment
     public function __construct()
     {
         $this->replies = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     #[ORM\PrePersist]
@@ -67,7 +74,7 @@ class Comment
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -79,7 +86,7 @@ class Comment
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -91,7 +98,7 @@ class Comment
         return $this;
     }
 
-    public function getComment(): ?string
+    public function getComment(): string
     {
         return $this->comment;
     }
@@ -103,7 +110,7 @@ class Comment
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -157,7 +164,7 @@ class Comment
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
     }

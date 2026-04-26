@@ -17,6 +17,7 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
+    /** @return Query<int, Comment> */
     public function findParentComments(bool $includeDeleted = false): Query
     {
         $qb = $this->createQueryBuilder('c')
@@ -27,9 +28,13 @@ class CommentRepository extends ServiceEntityRepository
             $qb->andWhere('c.deletedAt IS NULL');
         }
 
-        return $qb->getQuery();
+        /** @var Query<int, Comment> $query */
+        $query = $qb->getQuery();
+
+        return $query;
     }
 
+    /** @return Query<int, Comment> */
     public function findReplies(Comment $parent, bool $includeDeleted = false): Query
     {
         $qb = $this->createQueryBuilder('c')
@@ -41,6 +46,9 @@ class CommentRepository extends ServiceEntityRepository
             $qb->andWhere('c.deletedAt IS NULL');
         }
 
-        return $qb->getQuery();
+        /** @var Query<int, Comment> $query */
+        $query = $qb->getQuery();
+
+        return $query;
     }
 }

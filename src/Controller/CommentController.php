@@ -99,7 +99,13 @@ final class CommentController extends AbstractController
             return $this->render('comment/not_found.html.twig', [], new Response('', 404));
         }
 
-        $comment->setDeletedAt(new \DateTimeImmutable());
+        $now = new \DateTimeImmutable();
+        $comment->setDeletedAt($now);
+
+        foreach ($comment->getReplies() as $reply) {
+            $reply->setDeletedAt($now);
+        }
+
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Comment deleted.');
