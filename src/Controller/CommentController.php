@@ -10,29 +10,23 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CommentController extends AbstractController
 {
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PaginatorInterface $paginator,
+        private readonly CommentRepository $commentRepository,
     ) {}
 
     #[Route('/', name: 'homepage', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
-        $parentComments = $this->entityManager->createQueryBuilder()
-            ->select('c')
-            ->from(Comment::class, 'c')
-            ->where('c.parent IS NULL')
-            ->orderBy('c.createdAt', 'DESC')
-            ->getQuery();
+        $showDeleted = $request->query->getBoolean('show_deleted', false);
 
         $pagination = $this->paginator->paginate(
-            $parentComments,
+            $this->commentRepository->findParentComments($showDeleted),
             $request->query->getInt('page', 1),
             10
         );
@@ -51,8 +45,9 @@ final class CommentController extends AbstractController
         }
 
         return $this->render('comment/index.html.twig', [
-            'pagination' => $pagination,
-            'form' => $form,
+            'pagination'   => $pagination,
+            'form'         => $form,
+            'show_deleted' => $showDeleted,
         ]);
     }
 
@@ -65,17 +60,10 @@ final class CommentController extends AbstractController
             return $this->render('comment/not_found.html.twig', [], new Response('', 404));
         }
 
-        $commentReplies = $this->entityManager->createQueryBuilder()
-            ->select('c')
-            ->from(Comment::class, 'c')
-            ->where('c.parent = :parent')
-            ->setParameter('parent', $parentComment)
-            ->orderBy('c.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $showDeleted = $request->query->getBoolean('show_deleted', false);
 
         $pagination = $this->paginator->paginate(
-            $commentReplies,
+            $this->commentRepository->findReplies($parentComment, $showDeleted),
             $request->query->getInt('page', 1),
             10
         );
@@ -96,8 +84,60 @@ final class CommentController extends AbstractController
 
         return $this->render('comment/view.html.twig', [
             'parentComment' => $parentComment,
-            'pagination' => $pagination,
-            'form' => $form,
+            'pagination'    => $pagination,
+            'form'          => $form,
+            'show_deleted'  => $showDeleted,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'comment_delete', methods: ['POST'])]
+    public function delete(int $id): Response
+    {
+        $comment = $this->entityManager->find(Comment::class, $id);
+
+        if (!$comment) {
+            return $this->render('comment/not_found.html.twig', [], new Response('', 404));
+        }
+
+        $comment->setDeletedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Comment deleted.');
+
+        if ($comment->getParent() !== null) {
+            return $this->redirectToRoute('comment_view', ['id' => $comment->getParent()->getId()]);
+        }
+
+        return $this->redirectToRoute('homepage');
+    }
+
+    #[Route('/{id}/edit', name: 'comment_edit', methods: ['GET', 'POST'])]
+    public function edit(int $id, Request $request): Response
+    {
+        $comment = $this->entityManager->find(Comment::class, $id);
+
+        if (!$comment) {
+            return $this->render('comment/not_found.html.twig', [], new Response('', 404));
+        }
+
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Comment updated.');
+
+            if ($comment->getParent() !== null) {
+                return $this->redirectToRoute('comment_view', ['id' => $comment->getParent()->getId()]);
+            }
+
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('comment/edit.html.twig', [
+            'form'    => $form,
+            'comment' => $comment,
         ]);
     }
 }

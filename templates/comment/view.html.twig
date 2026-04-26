@@ -2,7 +2,6 @@
 
 {% block header_content %}
     <h1 class="mb-3">{% block title %}Viewing comment by {{ parentComment.name }}{% endblock title %}</h1>
-
     <a href="{{ path('homepage') }}" class="btn btn-primary">Return to homepage</a>
 {% endblock header_content %}
 
@@ -13,10 +12,17 @@
             <hr />
 
             <div class="ml-4">
-                <h4 class="mb-3">{{ parentComment.replies|length }} replies</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">{{ pagination.totalItemCount }} replies</h4>
+                    {% if show_deleted %}
+                        <a href="{{ path('comment_view', {id: parentComment.id}) }}" class="btn btn-sm btn-secondary">Hide Deleted</a>
+                    {% else %}
+                        <a href="{{ path('comment_view', {id: parentComment.id, show_deleted: 1}) }}" class="btn btn-sm btn-outline-secondary">Show Deleted</a>
+                    {% endif %}
+                </div>
 
-                {% for commentReplies in pagination %}
-                    {{ include('comment/_comment.html.twig', { comment: commentReplies }, with_context = false) }}
+                {% for commentReply in pagination %}
+                    {{ include('comment/_comment.html.twig', { comment: commentReply }, with_context = false) }}
                 {% endfor %}
 
                 {{ knp_pagination_render(pagination) }}
@@ -26,8 +32,8 @@
 
                 {{ form_start(form) }}
                 {{ include('comment/_comment_form.html.twig') }}
-
                 <button class="btn btn-primary btn-lg btn-block" type="submit">Add Reply</button>
+                {{ form_end(form) }}
             </div>
         </div>
     </div>

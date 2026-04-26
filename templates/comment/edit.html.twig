@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editing comment{% endblock %}
+
+{% block header_content %}
+    <h1 class="mb-3">Editing comment by {{ comment.name }}</h1>
+    {% if comment.parent %}
+        <a href="{{ path('comment_view', {id: comment.parent.id}) }}" class="btn btn-secondary">Cancel</a>
+    {% else %}
+        <a href="{{ path('homepage') }}" class="btn btn-secondary">Cancel</a>
+    {% endif %}
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-12">
+            {{ form_start(form) }}
+            {{ include('comment/_comment_form.html.twig') }}
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save Changes</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

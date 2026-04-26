@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,30 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    //    /**
-    //     * @return Comment[] Returns an array of Comment objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findParentComments(bool $includeDeleted = false): Query
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.parent IS NULL')
+            ->orderBy('c.createdAt', 'DESC');
 
-    //    public function findOneBySomeField($value): ?Comment
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (!$includeDeleted) {
+            $qb->andWhere('c.deletedAt IS NULL');
+        }
+
+        return $qb->getQuery();
+    }
+
+    public function findReplies(Comment $parent, bool $includeDeleted = false): Query
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.parent = :parent')
+            ->setParameter('parent', $parent)
+            ->orderBy('c.createdAt', 'DESC');
+
+        if (!$includeDeleted) {
+            $qb->andWhere('c.deletedAt IS NULL');
+        }
+
+        return $qb->getQuery();
+    }
 }
