@@ -15,21 +15,7 @@ class CommentType extends AbstractType
         $builder
             ->add('name')
             ->add('email')
-            ->add('comment')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updatedAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('deletedAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('parent', EntityType::class, [
-                'class' => Comment::class,
-                'choice_label' => 'id',
-            ])
-        ;
+            ->add('comment');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

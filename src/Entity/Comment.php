@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Comment
 {
     #[ORM\Id]
@@ -46,7 +47,18 @@ class Comment
     public function __construct()
     {
         $this->replies = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
         $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
         $this->updatedAt = new \DateTimeImmutable();
     }
 

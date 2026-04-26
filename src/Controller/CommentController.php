@@ -24,7 +24,7 @@ final class CommentController extends AbstractController
     #[Route('/', name: 'homepage', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
-        $getParentComments = $this->entityManager->createQueryBuilder()
+        $parentComments = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from(Comment::class, 'c')
             ->where('c.parent IS NULL')
@@ -32,7 +32,7 @@ final class CommentController extends AbstractController
             ->getQuery();
 
         $pagination = $this->paginator->paginate(
-            $getParentComments,
+            $parentComments,
             $request->query->getInt('page', 1),
             10
         );
@@ -47,7 +47,7 @@ final class CommentController extends AbstractController
 
             $this->addFlash('success', 'Comment added successfully!');
 
-            return $this->redirectToRoute('comment_index');
+            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('comment/index.html.twig', [
@@ -56,7 +56,7 @@ final class CommentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/view', name: 'comment_show', methods: ['GET', 'POST'])]
+    #[Route('/{id}/view', name: 'comment_view', methods: ['GET', 'POST'])]
     public function show(int $id, Request $request): Response
     {
         $parentComment = $this->entityManager->find(Comment::class, $id);
@@ -92,10 +92,10 @@ final class CommentController extends AbstractController
 
             $this->addFlash('success', 'Reply added successfully!');
 
-            return $this->redirectToRoute('comment_show', ['id' => $id]);
+            return $this->redirectToRoute('comment_view', ['id' => $id]);
         }
 
-        return $this->render('comment/show.html.twig', [
+        return $this->render('comment/view.html.twig', [
             'parentComment' => $parentComment,
             'pagination' => $pagination,
             'form' => $form,

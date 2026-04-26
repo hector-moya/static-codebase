@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block header_content %}
-    <h1 class="mb-3">{% block title %}Viewing comment by [NAME]{% endblock title %}</h1>
+    <h1 class="mb-3">{% block title %}Viewing comment by {{ parentComment.name }}{% endblock title %}</h1>
 
     <a href="{{ path('homepage') }}" class="btn btn-primary">Return to homepage</a>
 {% endblock header_content %}
@@ -9,22 +9,23 @@
 {% block body_content %}
     <div class="row">
         <div class="col-md-12">
-            {{ include('comment/_comment.html.twig') }}
+            {{ include('comment/_comment.html.twig', { comment: parentComment }, with_context = false) }}
             <hr />
 
             <div class="ml-4">
-                <h4 class="mb-3">[NUMBER OF REPLIES HERE]</h4>
+                <h4 class="mb-3">{{ parentComment.replies|length }} replies</h4>
 
-                {% for i in 1..10 %}
-                    {{ include('comment/_comment.html.twig') }}
+                {% for commentReplies in pagination %}
+                    {{ include('comment/_comment.html.twig', { comment: commentReplies }, with_context = false) }}
                 {% endfor %}
 
-                [PAGINATION]
+                {{ knp_pagination_render(pagination) }}
                 <hr />
 
-                <h4 class="mb-3">Reply to [NAME]</h4>
+                <h4 class="mb-3">Reply to {{ parentComment.name }}</h4>
 
-                [Form to go here]
+                {{ form_start(form) }}
+                {{ include('comment/_comment_form.html.twig') }}
 
                 <button class="btn btn-primary btn-lg btn-block" type="submit">Add Reply</button>
             </div>
