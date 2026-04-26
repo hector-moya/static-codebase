@@ -5,7 +5,7 @@
                 {{ comment.name }}
             </div>
             <div class="text-right col-4">
-            {% if comment.parent === null %}
+            {% if show_link is defined and show_link %}
                 <a href="{{ path('comment_view', {id: comment.id}) }}">
                     View comment
                 </a>

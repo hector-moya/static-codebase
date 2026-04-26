@@ -6,7 +6,7 @@
 			<h4 class="mb-3">Recent Comments</h4>
 
 			{% for parentComment in pagination  %}
-				{{ include('comment/_comment.html.twig', { comment: parentComment }, with_context = false) }}
+				{{ include('comment/_comment.html.twig', { comment: parentComment, show_link: true }, with_context = false) }}
 			{% endfor %}
 
 			{{ knp_pagination_render(pagination) }}
