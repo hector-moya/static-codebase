@@ -61,9 +61,8 @@ final class CommentController extends AbstractController
     {
         $parentComment = $this->entityManager->find(Comment::class, $id);
 
-        // 404 if not found OR if it is itself a reply (has a parent)
         if (!$parentComment || $parentComment->getParent() !== null) {
-            throw $this->createNotFoundException('Comment not found');
+            return $this->render('comment/not_found.html.twig', [], new Response('', 404));
         }
 
         $commentReplies = $this->entityManager->createQueryBuilder()
